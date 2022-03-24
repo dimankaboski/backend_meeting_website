@@ -1,20 +1,24 @@
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 
-from rest_framework import permissions, generics, mixins
+from rest_framework import permissions, generics, mixins, status
 from rest_framework.generics import CreateAPIView
 from rest_framework.mixins import CreateModelMixin
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .serializers import UserSerializer
 from utils.watermark import add_watermark
-
+from utils.send_mail import send_mail
 import logging
 
 watermark_image = settings.WATERMARK
+User = get_user_model()
 
 class RegisterNewUser(CreateAPIView, CreateModelMixin):
 
-    model = get_user_model()
+    model = User
     permission_classes = [
         permissions.AllowAny
     ]
@@ -26,3 +30,19 @@ class RegisterNewUser(CreateAPIView, CreateModelMixin):
         user.photo = water_photo
         user.save()
         return user
+
+class MatchAnotherUser(APIView):
+    
+    def get(self, request, pk):
+        another_user = get_object_or_404(User, id=pk)
+        user = request.user
+        if user in another_user.liked.all() and another_user in user.liked.all():
+            #TODO: sendemail to users
+            send_mail(user.email, another_user)
+            send_mail(another_user.email, user)
+            return Response({"message": f'{another_user.email}'}, status=status.HTTP_200_OK)
+        elif another_user in user.liked.all():
+            return Response({"message": f'Вы уже ставили лайк этому пользователю'}, status=status.HTTP_200_OK)
+        user.liked.add(another_user)
+        user.save()
+        return Response({"message": f'Вы поставили лайк пользователю'}, status=status.HTTP_200_OK)
