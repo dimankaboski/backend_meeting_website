@@ -16,7 +16,8 @@ import logging
 watermark_image = settings.WATERMARK
 User = get_user_model()
 
-class RegisterNewUser(CreateAPIView, CreateModelMixin):
+
+class RegisterNewUser(CreateAPIView):
 
     model = User
     permission_classes = [

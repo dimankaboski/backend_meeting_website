@@ -24,3 +24,10 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ( "id", "email", "password", "first_name", "last_name", "sex", "photo")
+
+
+class UserListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        exclude = ("id", "email", "first_name", "last_name", "sex", "photo")

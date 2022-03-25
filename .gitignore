@@ -128,4 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+static/admin/
+static/rest_framework/
 media/
