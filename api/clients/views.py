@@ -37,13 +37,13 @@ class MatchAnotherUser(APIView):
     def get(self, request, pk):
         another_user = get_object_or_404(User, id=pk)
         user = request.user
+        if another_user in user.liked.all():
+            return Response({"message": f'Вы уже ставили лайк этому пользователю'}, status=status.HTTP_200_OK)
+        else:
+            user.liked.add(another_user)
+            user.save()
         if user in another_user.liked.all() and another_user in user.liked.all():
-            #TODO: sendemail to users
             send_mail(user.email, another_user)
             send_mail(another_user.email, user)
-            return Response({"message": f'{another_user.email}'}, status=status.HTTP_200_OK)
-        elif another_user in user.liked.all():
-            return Response({"message": f'Вы уже ставили лайк этому пользователю'}, status=status.HTTP_200_OK)
-        user.liked.add(another_user)
-        user.save()
+            return Response({"message": f'{another_user.email}'}, status=status.HTTP_200_OK)   
         return Response({"message": f'Вы поставили лайк пользователю'}, status=status.HTTP_200_OK)

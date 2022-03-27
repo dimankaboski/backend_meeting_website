@@ -9,7 +9,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost', 'astro.dimankab1.fvds.ru']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -70,6 +70,15 @@ DATABASES = {
         'PORT': 5432
     }
 }
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_HOST_PASSWORD = 'ufjjccnfhwgqrges'
+EMAIL_HOST_USER = 'dimankaboski@yandex.ru'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 AUTH_PASSWORD_VALIDATORS = [
