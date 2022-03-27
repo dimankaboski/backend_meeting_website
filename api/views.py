@@ -11,6 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
 
 from api.clients.serializers import UserListSerializer
+from utils.geo import coord_range
 
 import logging
 
@@ -29,6 +30,12 @@ class UserFilter(rest_filters.FilterSet):
     """Фильтр по юзерам"""
     first_name = rest_filters.CharFilter(field_name='first_name', lookup_expr='icontains')
     last_name = rest_filters.CharFilter(field_name='last_name', lookup_expr='icontains')
+    distance = rest_filters.NumberFilter(method='filter_distance')
+
+    def filter_distance(self, queryset, name, value):
+        user = self.request.user
+        coords_range = coord_range([user.lat, user.lon], dist=int(value))
+        return queryset.filter(lat__range=[coords_range[0], coords_range[1]], lon__range=[coords_range[2], coords_range[3]])
 
     class Meta:
         model = User
